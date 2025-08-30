@@ -80,3 +80,73 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
   return true;
 });
+
+function detectScormVideos() {
+  const videos = [];
+  
+  // Look for video elements inside iframes
+  const iframes = document.querySelectorAll('iframe');
+  iframes.forEach(iframe => {
+    try {
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      const iframeVideos = iframeDoc.querySelectorAll('video');
+      
+      iframeVideos.forEach(video => {
+        if (video.src) {
+          videos.push({
+            src: video.src,
+            type: 'video/mp4'
+          });
+        }
+        
+        const sources = video.querySelectorAll('source');
+        sources.forEach(source => {
+          if (source.src) {
+            videos.push({
+              src: source.src,
+              type: source.type || 'video/mp4'
+            });
+          }
+        });
+      });
+    } catch (e) {
+      // Cross-origin iframe access will fail
+      console.log("Could not access iframe content due to same-origin policy");
+    }
+  });
+  
+  // Look for specific SCORM player elements
+  const scormElements = document.querySelectorAll('[data-scorm-video], .scorm-video, .video-js');
+  scormElements.forEach(element => {
+    // Extract video URL from data attributes or other properties
+    const videoUrl = element.getAttribute('data-video-url') || 
+                     element.getAttribute('src') ||
+                     element.querySelector('source')?.src;
+    
+    if (videoUrl) {
+      videos.push({
+        src: videoUrl,
+        type: 'video/mp4'
+      });
+    }
+  });
+  
+  return videos;
+}
+
+// Add the SCORM detection to the message listener
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.action === "getVideos") {
+    let videos = [];
+    
+    // Standard video detection (from previous code)
+    // ...
+    
+    // Add SCORM-specific detection
+    const scormVideos = detectScormVideos();
+    videos = videos.concat(scormVideos);
+    
+    sendResponse({videos: videos});
+  }
+  return true;
+});
