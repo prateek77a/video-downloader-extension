@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      width: 300px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+    .video-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .video-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .download-options {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 5px 10px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+    .no-videos {
+      color: #666;
+      font-style: italic;
+    }
+    .loading {
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h2>Video Downloader</h2>
+  <div id="loading" class="loading">Scanning for videos...</div>
+  <div id="videos-container"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
