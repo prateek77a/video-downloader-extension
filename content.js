@@ -62,3 +62,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         });
       });
     }
+    
+    // Look for HLS streams (.m3u8)
+    const hlsRegex = /https?:\/\/[^"'\s]+\.m3u8/g;
+    const hlsMatches = pageContent.match(hlsRegex);
+    
+    if (hlsMatches) {
+      hlsMatches.forEach(url => {
+        videos.push({
+          src: url,
+          type: 'application/x-mpegURL'
+        });
+      });
+    }
+    
+    sendResponse({videos: videos});
+  }
+  return true;
+});
